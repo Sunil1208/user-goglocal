@@ -2,6 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class JWTMiddleware:
+    EXCLUDED_PATHS = [
+        '/admin/',  # Exclude the admin panel
+        '/api/user/login/',  # Exclude the login API
+    ]
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -9,8 +13,8 @@ class JWTMiddleware:
         user_model = get_user_model()
         jwt_auth = JWTAuthentication()
 
-        # Exclude JWT validation for the login API endpoint
-        if request.path == '/api/user/login':  #Couldn't find any better solution for this at this point of time, will do the research later
+        # Exclude specific paths from JWT validation
+        if any(request.path.startswith(path) for path in self.EXCLUDED_PATHS):
             return self.get_response(request)
 
         # Check authorization header for a JWT token
