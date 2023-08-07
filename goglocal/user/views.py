@@ -39,9 +39,6 @@ class UserProfileView(APIView):
                 "status": -1,
                 "message": "User not found"
            }
-           print("USER IS ", user, type(user))
-           print(".....")
-           print(user.username)
            if user:
                 response["data"] = {
                      "first_name": user.first_name,

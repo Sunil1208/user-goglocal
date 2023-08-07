@@ -30,7 +30,6 @@ class JWTMiddleware:
 
                 # Fetch the user object
                 user = user_model.objects.get(id=user_id)
-                print("USER N MID: ", user, type(user))
 
                 # Add the user object to the request
                 request.user = user
