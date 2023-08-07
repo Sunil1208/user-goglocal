@@ -4,7 +4,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 class JWTMiddleware:
     EXCLUDED_PATHS = [
         '/admin/',  # Exclude the admin panel
-        '/api/user/login/',  # Exclude the login API
+        '/api/user/login',  # Exclude the login API
     ]
     def __init__(self, get_response):
         self.get_response = get_response

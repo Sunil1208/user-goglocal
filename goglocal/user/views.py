@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 
 class UserLoginView(APIView):
@@ -24,10 +25,10 @@ class UserLoginView(APIView):
                  "access_token": str(refresh.access_token),
             }
             response["status"] = 1
-            return Response(response, status=200)
+            return Response(response, status=status.HTTP_200_OK)
         else:
             response["message"] = "Invalid Credentials"
-            return Response(response, status=400)
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
         
 class UserProfileView(APIView):
        permission_classes = [IsAuthenticated]
@@ -46,4 +47,4 @@ class UserProfileView(APIView):
                 }
                 response["status"] = 1
                 response["message"] = ""
-           return Response(response)
+           return Response(response, status=status.HTTP_200_OK if user else status.HTTP_404_NOT_FOUND)
