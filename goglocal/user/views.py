@@ -1,39 +1,49 @@
-from django.shortcuts import render
-from .models import CustomUser
-from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 
 
-# Create your views here.
+class UserLoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-#login route /api/user/login
-def login(req):
-    # get the username and password
-    req_json = req.json()
-    username, password = req_json.username, req_json.password
-    user = CustomUser.objects.get(username=username, password=password)
-    response_data = {
-        "status": -1,
-        "data": {},
-        "message": ""
-    }
-    if not user:
-        response_data["message"] = "Invalid credentials"
-    refresh = RefreshToken.for_user(user)
-    response_data["data"] = {
-        "access_token": str(refresh.access_token),
-    }
-    return HttpResponse(content=response_data)
-    
-    # verify the login, if login is success, create a new jwt token and return it in the response
+        user = authenticate(username=username, password=password)
 
+        response = {
+             "data": {},
+             "status": -1,
+             "message": ""
+        }
 
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            response['data'] = {
+                 "access_token": str(refresh.access_token),
+            }
+            response["status"] = 1
+            return Response(response, status=200)
+        else:
+            response["message"] = "Invalid Credentials"
+            return Response(response, status=400)
+        
+class UserProfileView(APIView):
+       permission_classes = [IsAuthenticated]
 
-# profile route   /api/user/profile
-
-
-
-def profile():
-    # requires jwt token for access
-    # return the username and password decoded from the jwt
-    pass
+       def get(self, request):
+           user = request.user
+           response = {
+                "data": {},
+                "status": -1,
+                "message": "User not found"
+           }
+           if user:
+                response["data"] = {
+                     "first_name": user.first_name,
+                     "last_name": user.last_name
+                }
+                response["status"] = 1
+                response["message"] = ""
+           return Response(response)
