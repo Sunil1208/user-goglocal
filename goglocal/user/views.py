@@ -3,8 +3,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-
+from rest_framework import status, viewsets
+from .models import UserProfile
+from .serializers import UserProfileSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 class UserLoginView(APIView):
     def post(self, request):
